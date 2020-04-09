@@ -21,7 +21,7 @@ Example Airflow DAG that shows the complex DAG structure.
 """
 
 from airflow.models.dag import DAG
-from airflow.models.baseoperator import chain
+# from airflow.models.baseoperator import chain
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.utils.dates import days_ago
@@ -158,7 +158,8 @@ with DAG(
         create_tag_template_field,
         create_tag,
     ]
-    chain(*create_tasks)
+    # chain(*create_tasks)
+    create_entry_group >> create_entry_gcs >> create_tag_template >> create_tag_template_field >> create_tag
 
     create_entry_group >> delete_entry_group
     create_entry_group >> create_entry_group_result
@@ -188,7 +189,8 @@ with DAG(
         delete_entry_group,
         delete_entry,
     ]
-    chain(*delete_tasks)
+    # chain(*delete_tasks)
+    delete_tag >> delete_tag_template_field >> delete_tag_template >> delete_entry_group >> delete_entry
 
     # Get
     create_tag_template >> get_tag_template >> delete_tag_template
@@ -212,7 +214,9 @@ with DAG(
     create_tag_template_field >> rename_tag_template_field >> delete_tag_template_field
 
     # Search
-    chain(create_tasks, search_catalog, delete_tasks)
+    # chain(create_tasks, search_catalog, delete_tasks)
+    create_tasks >> search_catalog >> delete_tasks
+
     search_catalog >> search_catalog_result
 
     # Update
